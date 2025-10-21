@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:14.8-alpine3.18
+    environment:
+      POSTGRES_DB: "leetcodedb"
+      POSTGRES_USER: "leetcodeuser"
+      POSTGRES_PASSWORD: "pgpwd4leetcode"
+      PGDATA: "//var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+      # - data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  data:
