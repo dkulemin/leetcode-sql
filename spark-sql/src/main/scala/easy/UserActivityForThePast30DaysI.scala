@@ -2,8 +2,7 @@ package easy
 
 import java.time.format.DateTimeFormatter
 import java.time.LocalDate
-import org.apache.spark.sql._
-import org.apache.log4j.{Level, Logger}
+import org.apache.spark.sql.{SparkSession, functions}
 
 object UserActivityForThePast30DaysI extends App {
   /**
@@ -17,8 +16,6 @@ object UserActivityForThePast30DaysI extends App {
    * https://leetcode.com/problems/user-activity-for-the-past-30-days-i/description/
    */
 
-  Logger.getLogger("org.apache.spark").setLevel(Level.ERROR)
-
   val dateStr = "2019-07-27"
   val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
   val date = LocalDate.parse(dateStr, formatter)
@@ -31,6 +28,8 @@ object UserActivityForThePast30DaysI extends App {
     .config("spark.jars", "./jars/postgresql-42.7.8.jar")
     .getOrCreate()
 
+  spark.sparkContext.setLogLevel("WARN")
+
   val df = spark.read
     .format("jdbc")
     .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
@@ -40,12 +39,8 @@ object UserActivityForThePast30DaysI extends App {
     .option("driver", "org.postgresql.Driver")
     .load()
 
-  println(
-    df
-      .filter(functions.col("activity_date") > date.minusDays(30) && functions.col("activity_date") <= date)
-      .groupBy(functions.col("activity_date").alias("day"))
-      .agg(functions.countDistinct("user_id").alias("active_users"))
-      .show()
-  )
-
+  df.filter(functions.col("activity_date") > date.minusDays(30) && functions.col("activity_date") <= date)
+    .groupBy(functions.col("activity_date").alias("day"))
+    .agg(functions.countDistinct("user_id").alias("active_users"))
+    .show()
 }
