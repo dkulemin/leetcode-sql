@@ -1,10 +1,28 @@
 package easy
 
+import java.time.format.DateTimeFormatter
+import java.time.LocalDate
 import org.apache.spark.sql._
 import org.apache.log4j.{Level, Logger}
 
 object UserActivityForThePast30DaysI extends App {
+  /**
+   * Write a solution to find the daily active user count for a period of 30 days ending 2019-07-27 inclusively.
+   * A user was active on someday if they made at least one activity on that day.
+   *
+   * Return the result table in any order.
+   *
+   * The result format is in the following example.
+   *
+   * https://leetcode.com/problems/user-activity-for-the-past-30-days-i/description/
+   */
+
   Logger.getLogger("org.apache.spark").setLevel(Level.ERROR)
+
+  val dateStr = "2019-07-27"
+  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+  val date = LocalDate.parse(dateStr, formatter)
+
   val spark = SparkSession.builder()
     .appName("User_Activity_for_the_Past_30_Days_I")
     .master("local[*]")
@@ -23,11 +41,11 @@ object UserActivityForThePast30DaysI extends App {
     .load()
 
   println(
-    df.
-      filter(functions.col("activity_date") >= "2019-07-01" && functions.col("activity_date") <= "2019-07-27").
-      groupBy(functions.col("activity_date")).
-      agg(functions.countDistinct("user_id").alias("active_users")).
-      show()
+    df
+      .filter(functions.col("activity_date") > date.minusDays(30) && functions.col("activity_date") <= date)
+      .groupBy(functions.col("activity_date").alias("day"))
+      .agg(functions.countDistinct("user_id").alias("active_users"))
+      .show()
   )
 
 }
