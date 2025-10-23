@@ -73,3 +73,52 @@ INSERT INTO Tweets (tweet_id, content)
 VALUES
     ('1', 'Let us Code'),
     ('2', 'More than fifteen chars are here!');
+
+CREATE TABLE IF NOT EXISTS Employees (
+    id int,
+    name VARCHAR
+);
+TRUNCATE TABLE Employees;
+INSERT INTO Employees (id, name)
+VALUES
+    ('1', 'Alice'),
+    ('7', 'Bob'),
+    ('11', 'Meir'),
+    ('90', 'Winston'),
+    ('3', 'Jonathan');
+
+CREATE TABLE IF NOT EXISTS EmployeeUNI (
+    id int,
+    unique_id int
+);
+TRUNCATE TABLE EmployeeUNI;
+INSERT INTO EmployeeUNI (id, unique_id)
+VALUES
+    ('3', '1'),
+    ('11', '2'),
+    ('90', '3');
+
+CREATE TABLE IF NOT EXISTS Sales (
+    sale_id int,
+    product_id int,
+    year int,
+    quantity int,
+    price int
+);
+TRUNCATE TABLE Sales;
+INSERT INTO Sales (sale_id, product_id, year, quantity, price)
+VALUES
+    ('1', '100', '2008', '10', '5000'),
+    ('2', '100', '2009', '12', '5000'),
+    ('7', '200', '2011', '15', '9000');
+
+CREATE TABLE IF NOT EXISTS Product (
+    product_id int,
+    product_name VARCHAR
+);
+TRUNCATE TABLE Product;
+INSERT INTO Product (product_id, product_name)
+VALUES
+    ('100', 'Nokia'),
+    ('200', 'Apple'),
+    ('300', 'Samsung');
