@@ -32,7 +32,7 @@ object UserActivityForThePast30DaysI extends App {
   val date = LocalDate.parse(dateStr, formatter)
 
   val spark = SparkSession.builder()
-    .appName("User_Activity_for_the_Past_30_Days_I")
+    .appName("UserActivityForThePast30DaysI")
     .master("local[*]")
     .config("spark.driver.host", "127.0.0.1")
     .config("spark.driver.bindAddress", "127.0.0.1")

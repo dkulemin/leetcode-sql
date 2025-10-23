@@ -23,7 +23,7 @@ object RecyclableAndLowFatProducts extends App {
    */
 
   val spark = SparkSession.builder()
-    .appName("User_Activity_for_the_Past_30_Days_I")
+    .appName("RecyclableAndLowFatProducts")
     .master("local[*]")
     .config("spark.driver.host", "127.0.0.1")
     .config("spark.driver.bindAddress", "127.0.0.1")
