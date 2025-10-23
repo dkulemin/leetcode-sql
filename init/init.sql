@@ -63,3 +63,13 @@ VALUES
     ('4', '7', '1', '2019-07-22'),
     ('3', '4', '4', '2019-07-21'),
     ('3', '4', '4', '2019-07-21');
+
+CREATE TABLE IF NOT EXISTS Tweets (
+    tweet_id int,
+    content VARCHAR
+);
+TRUNCATE TABLE Tweets;
+INSERT INTO Tweets (tweet_id, content)
+VALUES
+    ('1', 'Let us Code'),
+    ('2', 'More than fifteen chars are here!');
