@@ -122,3 +122,25 @@ VALUES
     ('100', 'Nokia'),
     ('200', 'Apple'),
     ('300', 'Samsung');
+
+CREATE TABLE IF NOT EXISTS Employee (
+    id int,
+    name VARCHAR,
+    department VARCHAR,
+    managerId int
+);
+TRUNCATE TABLE Employee;
+INSERT INTO Employee (id, name, department, managerId)
+VALUES
+    ('101', 'John', 'A', NULL),
+    ('102', 'Dan', 'A', '101'),
+    ('103', 'James', 'A', '101'),
+    ('104', 'Amy', 'A', '101'),
+    ('105', 'Anne', 'A', '101'),
+    ('106', 'Ron', 'B', '101'),
+    ('111', 'John', 'A', NULL),
+    ('102', 'Dan', 'A', '111'),
+    ('103', 'James', 'A', '111'),
+    ('104', 'Amy', 'A', '111'),
+    ('105', 'Anne', 'A', '111'),
+    ('106', 'Ron', 'B', '111');
