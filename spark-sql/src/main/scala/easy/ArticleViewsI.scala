@@ -1,6 +1,7 @@
 package easy
 
-import org.apache.spark.sql.{SparkSession, functions}
+import org.apache.spark.sql.{functions => F}
+import utils.Utils.sparkReadPGTable
 
 object ArticleViewsI extends App {
   /**
@@ -23,27 +24,10 @@ object ArticleViewsI extends App {
    * https://leetcode.com/problems/article-views-i/description/
    * */
 
-  val spark = SparkSession.builder()
-    .appName("ArticleViewsI")
-    .master("local[*]")
-    .config("spark.driver.host", "127.0.0.1")
-    .config("spark.driver.bindAddress", "127.0.0.1")
-    .config("spark.jars", "./jars/postgresql-42.7.8.jar")
-    .getOrCreate()
-
-  spark.sparkContext.setLogLevel("WARN")
-
-  val df = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "views")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
-
-  df.filter(functions.col("author_id") === functions.col("viewer_id"))
-    .select(functions.col("author_id").alias("id"))
+  val session = sparkReadPGTable("ArticleViewsI")
+  val viewsDf = session("views")
+  viewsDf.filter(F.col("author_id") === F.col("viewer_id"))
+    .select(F.col("author_id").alias("id"))
     .sort()
     .distinct()
     .show()

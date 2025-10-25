@@ -1,6 +1,6 @@
 package easy
 
-import org.apache.spark.sql.SparkSession
+import utils.Utils.sparkReadPGTable
 
 object ProductSalesAnalysisI extends App {
 
@@ -39,34 +39,9 @@ object ProductSalesAnalysisI extends App {
    * https://leetcode.com/problems/product-sales-analysis-i/description/
    * */
 
-  val spark = SparkSession.builder()
-    .appName("ProductSalesAnalysisI")
-    .master("local[*]")
-    .config("spark.driver.host", "127.0.0.1")
-    .config("spark.driver.bindAddress", "127.0.0.1")
-    .config("spark.jars", "./jars/postgresql-42.7.8.jar")
-    .getOrCreate()
-
-  spark.sparkContext.setLogLevel("WARN")
-
-  val salesDf = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "sales")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
-
-  val productDf = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "product")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
-
+  val session = sparkReadPGTable("ProductSalesAnalysisI")
+  val salesDf = session("sales")
+  val productDf = session("product")
   salesDf.join(productDf, "product_id", "left").select("product_name", "year", "price").show()
 
 }

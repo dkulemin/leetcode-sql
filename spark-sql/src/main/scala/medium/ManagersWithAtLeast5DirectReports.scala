@@ -1,6 +1,7 @@
 package medium
 
-import org.apache.spark.sql.{SparkSession, functions}
+import org.apache.spark.sql.{functions => F}
+import utils.Utils.sparkReadPGTable
 
 object ManagersWithAtLeast5DirectReports extends App {
   /**
@@ -27,34 +28,17 @@ object ManagersWithAtLeast5DirectReports extends App {
    * https://leetcode.com/problems/managers-with-at-least-5-direct-reports/description/
    * */
 
-  val spark = SparkSession.builder()
-    .appName("ManagersWithAtLeast5DirectReports")
-    .master("local[*]")
-    .config("spark.driver.host", "127.0.0.1")
-    .config("spark.driver.bindAddress", "127.0.0.1")
-    .config("spark.jars", "./jars/postgresql-42.7.8.jar")
-    .getOrCreate()
+  val session = sparkReadPGTable("ManagersWithAtLeast5DirectReports")
+  val employeeDf = session("employee")
 
-  spark.sparkContext.setLogLevel("WARN")
-
-  val employeeDf = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "employee")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
-
-//  employeeDf.show()
   employeeDf.alias("e1")
     .join(
       employeeDf.alias("e2"),
-      functions.col("e1.id") === functions.col("e2.managerid")
+      F.col("e1.id") === F.col("e2.managerid")
     )
     .groupBy("e1.id", "e1.name")
-    .agg(functions.count("e1.id").alias("reportsCount"))
-    .filter(functions.col("reportsCount") > 4)
+    .agg(F.count("e1.id").alias("reportsCount"))
+    .filter(F.col("reportsCount") > 4)
     .select("e1.name")
     .show()
 }

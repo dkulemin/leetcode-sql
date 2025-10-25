@@ -1,6 +1,7 @@
 package medium
 
-import org.apache.spark.sql.{SparkSession, functions}
+import org.apache.spark.sql.{functions => F}
+import utils.Utils.sparkReadPGTable
 
 object MonthlyTransactionsI extends App {
   /**
@@ -27,39 +28,25 @@ object MonthlyTransactionsI extends App {
    * https://leetcode.com/problems/monthly-transactions-i/description/
    * */
 
-  val spark = SparkSession.builder()
-    .appName("MonthlyTransactionsI")
-    .master("local[*]")
-    .config("spark.driver.host", "127.0.0.1")
-    .config("spark.driver.bindAddress", "127.0.0.1")
-    .config("spark.jars", "./jars/postgresql-42.7.8.jar")
-    .getOrCreate()
-
-  spark.sparkContext.setLogLevel("WARN")
-
-  val transactionsDf = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "transactions")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
+  val session = sparkReadPGTable("MonthlyTransactionsI")
+  val transactionsDf = session("transactions")
 
   transactionsDf
-    .withColumn("month", functions.date_format(functions.col("trans_date"), "yyyy-MM"))
+    .withColumn("month", F.date_format(F.col("trans_date"), "yyyy-MM"))
     .groupBy("month", "country")
     .agg(
-      functions.count("id").alias("trans_count"),
-      functions.sum(
-        functions.when(
-          functions.col("state") === "approved", 1
+      F.count("id").alias("trans_count"),
+      F.sum(
+        F.when(
+          F.col("state") === "approved", 1
         ).otherwise(0)
       ).alias("approved_count"),
-      functions.sum("amount").alias("trans_total_amount"),
-      functions.sum(functions.when(
-        functions.col("state") === "approved", functions.col("amount")
-      ).otherwise(0)).alias("approved_total_amount"),
+      F.sum("amount").alias("trans_total_amount"),
+      F.sum(
+        F.when(
+          F.col("state") === "approved", F.col("amount")
+        ).otherwise(0)
+      ).alias("approved_total_amount"),
     )
     .select(
       "month",

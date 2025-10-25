@@ -1,6 +1,7 @@
 package easy
 
-import org.apache.spark.sql.{SparkSession, functions}
+import org.apache.spark.sql.{functions => F}
+import utils.Utils.sparkReadPGTable
 
 object FindCustomerReferee extends App {
   /**
@@ -23,26 +24,12 @@ object FindCustomerReferee extends App {
    * https://leetcode.com/problems/find-customer-referee/description/
    */
 
-  val spark = SparkSession.builder()
-    .appName("FindCustomerReferee")
-    .master("local[*]")
-    .config("spark.driver.host", "127.0.0.1")
-    .config("spark.driver.bindAddress", "127.0.0.1")
-    .config("spark.jars", "./jars/postgresql-42.7.8.jar")
-    .getOrCreate()
-
-  spark.sparkContext.setLogLevel("WARN")
-
-  val df = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "customer")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
-
-  df.filter(!(functions.col("referee_id") === 2) || functions.col("referee_id").isNull)
+  val session = sparkReadPGTable("FindCustomerReferee")
+  val customerDf = session("customer")
+  customerDf.filter(
+      !(F.col("referee_id") === 2) ||
+        F.col("referee_id").isNull
+    )
     .select("name")
     .show()
 }

@@ -1,6 +1,7 @@
 package medium
 
-import org.apache.spark.sql.{SparkSession, functions}
+import org.apache.spark.sql.{functions => F}
+import utils.Utils.sparkReadPGTable
 
 object ConfirmationRate extends App {
   /**
@@ -42,40 +43,16 @@ object ConfirmationRate extends App {
    * https://leetcode.com/problems/confirmation-rate/description/
    * */
 
-  val spark = SparkSession.builder()
-    .appName("ArticleViewsI")
-    .master("local[*]")
-    .config("spark.driver.host", "127.0.0.1")
-    .config("spark.driver.bindAddress", "127.0.0.1")
-    .config("spark.jars", "./jars/postgresql-42.7.8.jar")
-    .getOrCreate()
-
-  spark.sparkContext.setLogLevel("WARN")
-
-  val signupsDf = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "signups")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
-
-  val confirmationsDf = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "confirmations")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
+  val session = sparkReadPGTable("ArticleViewsI")
+  val signupsDf = session("signups")
+  val confirmationsDf = session("confirmations")
 
   signupsDf.join(confirmationsDf, "user_id", "left")
     .groupBy("user_id")
     .agg(
-      functions.round(
-        functions.avg(
-          functions.when(functions.col("action") === "confirmed", 1.0)
+      F.round(
+        F.avg(
+          F.when(F.col("action") === "confirmed", 1.0)
             .otherwise(0.0)
         ),
         2

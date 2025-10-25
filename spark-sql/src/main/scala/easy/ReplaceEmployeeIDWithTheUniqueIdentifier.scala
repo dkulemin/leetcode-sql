@@ -1,6 +1,6 @@
 package easy
 
-import org.apache.spark.sql.SparkSession
+import utils.Utils.sparkReadPGTable
 
 object ReplaceEmployeeIDWithTheUniqueIdentifier extends App {
   /**
@@ -34,33 +34,8 @@ object ReplaceEmployeeIDWithTheUniqueIdentifier extends App {
    * https://leetcode.com/problems/replace-employee-id-with-the-unique-identifier/description/
    * */
 
-  val spark = SparkSession.builder()
-    .appName("ReplaceEmployeeIDWithTheUniqueIdentifier")
-    .master("local[*]")
-    .config("spark.driver.host", "127.0.0.1")
-    .config("spark.driver.bindAddress", "127.0.0.1")
-    .config("spark.jars", "./jars/postgresql-42.7.8.jar")
-    .getOrCreate()
-
-  spark.sparkContext.setLogLevel("WARN")
-
-  val employeesDf = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "employees")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
-
-  val employeeUNIDf = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "employeeuni")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
-
+  val session = sparkReadPGTable("ReplaceEmployeeIDWithTheUniqueIdentifier")
+  val employeesDf = session("employees")
+  val employeeUNIDf = session("employeeuni")
   employeesDf.join(employeeUNIDf, "id", "left").select("unique_id", "name").show()
 }

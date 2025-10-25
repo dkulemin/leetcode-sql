@@ -1,6 +1,7 @@
 package easy
 
-import org.apache.spark.sql.{SparkSession, functions}
+import org.apache.spark.sql.{functions => F}
+import utils.Utils.sparkReadPGTable
 
 object InvalidTweets extends App {
   /**
@@ -23,26 +24,9 @@ object InvalidTweets extends App {
    * https://leetcode.com/problems/invalid-tweets/description/
    * */
 
-  val spark = SparkSession.builder()
-    .appName("InvalidTweets")
-    .master("local[*]")
-    .config("spark.driver.host", "127.0.0.1")
-    .config("spark.driver.bindAddress", "127.0.0.1")
-    .config("spark.jars", "./jars/postgresql-42.7.8.jar")
-    .getOrCreate()
-
-  spark.sparkContext.setLogLevel("WARN")
-
-  val df = spark.read
-    .format("jdbc")
-    .option("url", "jdbc:postgresql://127.0.0.1:5432/leetcodedb")
-    .option("dbtable", "tweets")
-    .option("user", "leetcodeuser")
-    .option("password", "pgpwd4leetcode")
-    .option("driver", "org.postgresql.Driver")
-    .load()
-
-  df.filter(functions.len(functions.col("content")) > 15)
+  val session = sparkReadPGTable("InvalidTweets")
+  val tweetsDf = session("tweets")
+  tweetsDf.filter(F.len(F.col("content")) > 15)
     .select("tweet_id")
     .show()
 }
