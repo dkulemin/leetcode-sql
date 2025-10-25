@@ -172,3 +172,18 @@ VALUES
     ('7', '2021-06-14 13:59:27', 'confirmed'),
     ('2', '2021-01-22 00:00:00', 'confirmed'),
     ('2', '2021-02-28 23:59:59', 'timeout');
+
+CREATE TABLE IF NOT EXISTS Transactions (
+    id int,
+    country VARCHAR,
+    state VARCHAR,
+    amount int,
+    trans_date date
+);
+TRUNCATE TABLE Transactions;
+INSERT INTO Transactions (id, country, state, amount, trans_date)
+VALUES
+    ('121', 'US', 'approved', '1000', '2018-12-18'),
+    ('122', 'US', 'declined', '2000', '2018-12-19'),
+    ('123', 'US', 'approved', '2000', '2019-01-01'),
+    ('124', 'DE', 'approved', '2000', '2019-01-07');
