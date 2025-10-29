@@ -40,4 +40,4 @@ FROM (
         price
     FROM sales
 ) t
-WHERE year = first_year
+WHERE year = first_year;
