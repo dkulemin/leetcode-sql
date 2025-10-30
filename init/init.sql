@@ -5290,3 +5290,17 @@ VALUES
     ('1'),
     ('17'),
     ('19');
+
+CREATE TABLE IF NOT EXISTS Employees_1731 (
+    employee_id int,
+    name VARCHAR,
+    reports_to int,
+    age int
+);
+TRUNCATE TABLE Employees_1731;
+INSERT INTO Employees_1731 (employee_id, name, reports_to, age)
+VALUES
+    ('9', 'Hercy', NULL, '43'),
+    ('6', 'Alice', '9', '41'),
+    ('4', 'Bob', '9', '36'),
+    ('2', 'Winston', NULL, '37');
