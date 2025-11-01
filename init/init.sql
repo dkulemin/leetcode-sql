@@ -5304,3 +5304,20 @@ VALUES
     ('6', 'Alice', '9', '41'),
     ('4', 'Bob', '9', '36'),
     ('2', 'Winston', NULL, '37');
+
+
+CREATE TABLE IF NOT EXISTS Employee_1789 (
+    employee_id int,
+    department_id int,
+    primary_flag VARCHAR
+);
+TRUNCATE TABLE Employee_1789;
+INSERT INTO Employee_1789 (employee_id, department_id, primary_flag)
+VALUES
+    ('1', '1', 'N'),
+    ('2', '1', 'Y'),
+    ('2', '2', 'N'),
+    ('3', '3', 'N'),
+    ('4', '2', 'N'),
+    ('4', '3', 'Y'),
+    ('4', '4', 'N');
